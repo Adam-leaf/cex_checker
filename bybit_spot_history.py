@@ -93,7 +93,6 @@ def loop_get_bybit_history(bb_api_key, bb_secret_key, category, start_date, end_
 
         while True:
             raw_history = get_bybit_trade_history(bb_api_key, bb_secret_key, category, unix_start, unix_end, cursor)
-            print(raw_history)
 
             if raw_history['statusCode'] != 200:
                 print(f"Error fetching data: {raw_history['body']}")

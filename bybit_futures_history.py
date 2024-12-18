@@ -59,7 +59,6 @@ def parse_bybit_closed(bb_api_key, bb_secret_key, category, unix_start, unix_end
 
         bb_closed_data = []
         bb_closed_pnl = bybit_closed_pnl(bb_api_key, bb_secret_key, category, unix_start, unix_end, cursor)
-        print(bb_closed_pnl)
 
         result = bb_closed_pnl.get('result', {})
 
@@ -71,21 +70,23 @@ def parse_bybit_closed(bb_api_key, bb_secret_key, category, unix_start, unix_end
         cursor = result.get('nextPageCursor')
 
         for item in list:
-            symbol = item.get('symbol')
             updatedTime = item.get('updatedTime')
-            date = convert_timestamp_to_date(updatedTime)
-            closedPnl = item.get('closedPnl')
-            action = "Long"
+            avgEntryPrice = float(item.get('avgEntryPrice'))
+            qty = float(item.get('qty'))
+            leverage = float(item.get('leverage'))
+            invested_value = avgEntryPrice * qty/leverage
             
             order_data = {
-                'date': date,
-                'exchange_id': 'bybit_unified',
-                'symbol': symbol,
-                'action': action,
+                'date': convert_timestamp_to_date(updatedTime),
+                'orderId': item.get('orderId'),
+                'symbol': item.get('symbol'),
+                'side': item.get('side'),
+                'invested_value': invested_value,
                 'exchange': 'bybit_unified',
-                'invested_value': '-', # Also not sure how to calc
-                'uPnL' : '0',
-                'rPnL': closedPnl
+                'avgEntryPrice' : item.get('avgEntryPrice'),
+                "avgExitPrice": item.get('avgExitPrice'),
+                'qty': item.get('qty'),
+                'rPnL': item.get('closedPnl')
             }
             
             bb_closed_data.append(order_data)
@@ -125,6 +126,7 @@ def loop_get_bybit_closed(bb_api_key, bb_secret_key, category, start_time, end_t
         current_start_time = current_end_time 
     
     return result_df
+
 
 # Master
 def get_bybit_futures_history(bb_api_key, bb_secret_key, start_date, end_date):

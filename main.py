@@ -1,5 +1,6 @@
 from bybit_futures_history import get_bybit_futures_history
 from bybit_spot_history import get_bybit_spot_history
+from binance_futures_history import get_binance_futures_history
 from utility import assign_time, save_dataframe_to_csv
 from dotenv import load_dotenv
 import os
@@ -43,7 +44,7 @@ def save_bybit_records(acc_owners, mode):
     """
 
     start_date, end_date = assign_time(mode) # "Weekly"/ "Yearly" / "Full"
-
+    print('bybit')
     print(start_date)
     print(end_date)
 
@@ -58,10 +59,28 @@ def save_bybit_records(acc_owners, mode):
         df_bybit_closed_futures = get_bybit_futures_history(owner_data['bybit_api_key'], owner_data['bybit_secret_key'], start_date, end_date)
         df_bybit_trades_spot = get_bybit_spot_history(owner_data['bybit_api_key'], owner_data['bybit_secret_key'], start_date, end_date)
 
-        save_dataframe_to_csv(df_bybit_closed_futures,f'records/bybit_futures_{owner}')
-        save_dataframe_to_csv(df_bybit_trades_spot,f'records/bybit_spot_{owner}')
+        save_dataframe_to_csv(df_bybit_closed_futures,f'records/bybit_futures_{owner}.csv')
+        save_dataframe_to_csv(df_bybit_trades_spot,f'records/bybit_spot_{owner}.csv')
 
+
+def save_binance_records(acc_owners, mode):
+    start_date, end_date = assign_time(mode) # "Weekly"/ "Yearly" / "Full"
+    print('binance')
+    print(start_date)
+    print(end_date)
+
+    for owner in acc_owners:
+        owner_data = process_owners(owner)
+
+        if owner_data['bin_api_key'] == 'none' or owner_data['bin_secret_key'] == 'none':
+            print(f"Skipping owner {owner} due to missing Binance API credentials")
+            continue
+            
+        df_binance_closed_futures = get_binance_futures_history(owner_data['bin_api_key'], owner_data['bin_secret_key'], start_date, end_date)
+        save_dataframe_to_csv(df_binance_closed_futures,f'records/binance_futures_{owner}.csv')
+    
 
 if __name__ == '__main__' : 
     acc_owners = ['J', 'VKEE', 'JM', 'JM2']
     save_bybit_records(acc_owners, "Full")
+    save_binance_records(acc_owners, "Full")
