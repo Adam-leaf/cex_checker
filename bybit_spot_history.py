@@ -112,7 +112,7 @@ def loop_get_bybit_history(bb_api_key, bb_secret_key, category, start_date, end_
 
     return trade_history_full
 
-def parse_bybit_hist(bybit_trade_history, owner):
+def parse_bybit_hist(bybit_trade_history):
 
     bybit_orders = []
 
@@ -128,7 +128,7 @@ def parse_bybit_hist(bybit_trade_history, owner):
         
 
         # Generate custom UUID
-        uuid_components = [trade_id, date, symbol, execValue, execQty, action, owner, 'bybit']
+        uuid_components = [trade_id, date, symbol, execValue, execQty, action, 'bybit']
         custom_uuid = generate_custom_uuid(all_unique=False, *uuid_components)
 
         order = {
