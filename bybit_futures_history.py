@@ -59,7 +59,8 @@ def parse_bybit_closed(bb_api_key, bb_secret_key, category, unix_start, unix_end
 
         bb_closed_data = []
         bb_closed_pnl = bybit_closed_pnl(bb_api_key, bb_secret_key, category, unix_start, unix_end, cursor)
-    
+        print(bb_closed_pnl)
+
         result = bb_closed_pnl.get('result', {})
 
         if not result:
