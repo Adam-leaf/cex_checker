@@ -125,15 +125,10 @@ def parse_bybit_hist(bybit_trade_history):
         trade_id = trade.get('execId')
         symbol = trade.get('symbol')
         action = trade.get('side')
-        
-
-        # Generate custom UUID
-        uuid_components = [trade_id, date, symbol, execValue, execQty, action, 'bybit']
-        custom_uuid = generate_custom_uuid(all_unique=False, *uuid_components)
 
         order = {
             'date': convert_timestamp_to_date(date),
-            'exchange_id': custom_uuid,
+            'trade_id': trade_id,
             'position': symbol,
             'action': action,
             'exchange': 'bybit_spot',
