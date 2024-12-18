@@ -136,7 +136,6 @@ def parse_bybit_hist(bybit_trade_history, owner):
             'exchange_id': custom_uuid,
             'position': symbol,
             'action': action,
-            'PIC': owner,
             'exchange': 'bybit_spot',
             'exec_qty': execQty,
             'exec_price': execValue,
@@ -149,8 +148,8 @@ def parse_bybit_hist(bybit_trade_history, owner):
     return df_bybit_orders
 
 # Master
-def get_bybit_spot_history(bb_api_key, bb_secret_key, owner, start_date, end_date):
+def get_bybit_spot_history(bb_api_key, bb_secret_key, start_date, end_date):
     raw_result = loop_get_bybit_history(bb_api_key, bb_secret_key, 'spot', start_date, end_date)
-    df_parsed_hist = parse_bybit_hist(raw_result, owner)
+    df_parsed_hist = parse_bybit_hist(raw_result)
 
     return df_parsed_hist

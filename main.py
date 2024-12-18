@@ -44,6 +44,9 @@ def save_bybit_records(acc_owners, mode):
 
     start_date, end_date = assign_time(mode) # "Weekly"/ "Yearly" / "Full"
 
+    print(start_date)
+    print(end_date)
+
     for owner in acc_owners:
 
         owner_data = process_owners(owner)
