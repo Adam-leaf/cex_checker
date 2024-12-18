@@ -1,7 +1,10 @@
 from bybit_futures_history import get_bybit_futures_history
 from bybit_spot_history import get_bybit_spot_history
 from utility import assign_time, save_dataframe_to_csv
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
 
 def process_owners(owner):
 
