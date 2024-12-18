@@ -80,8 +80,10 @@ def parse_bin_closed (bin_api_key, bin_secret_key, unix_start, unix_end):
 
 
 def loop_bin_closed (bin_api_key, bin_secret_key, start_time, end_time):
-    start_time = datetime.strptime(start_time, '%Y-%m-%d')
-    end_time = datetime.strptime(end_time, '%Y-%m-%d')
+    if isinstance(start_time, str):
+        start_time = datetime.strptime(start_time, '%Y-%m-%d')
+    if isinstance(end_time, str):
+        end_time = datetime.strptime(end_time, '%Y-%m-%d')
 
     # Current start time for the loop
     current_start_time = start_time
