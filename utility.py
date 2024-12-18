@@ -50,12 +50,9 @@ def save_dataframe_to_csv(dataframe, file_path):
         # Create 'records' directory if it doesn't exist
         os.makedirs('records', exist_ok=True)
         
-        # Ensure the file path is within the records folder
-        full_path = os.path.join('records', file_path)
-        
         # Save the dataframe
-        dataframe.to_csv(full_path, index=False)
-        print(f"DataFrame successfully saved to {full_path}")
+        dataframe.to_csv(file_path, index=False)
+        print(f"DataFrame successfully saved to {file_path}")
     except Exception as e:
         print(f"An error occurred while saving the DataFrame to CSV: {e}")
 
