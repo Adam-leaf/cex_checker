@@ -112,7 +112,7 @@ def loop_get_bybit_history(bb_api_key, bb_secret_key, category, start_date, end_
 
     return trade_history_full
 
-def parse_bybit_hist(bybit_trade_history, owner, all_unique):
+def parse_bybit_hist(bybit_trade_history, owner):
 
     bybit_orders = []
 
@@ -129,7 +129,7 @@ def parse_bybit_hist(bybit_trade_history, owner, all_unique):
 
         # Generate custom UUID
         uuid_components = [trade_id, date, symbol, execValue, execQty, action, owner, 'bybit']
-        custom_uuid = generate_custom_uuid(all_unique, *uuid_components)
+        custom_uuid = generate_custom_uuid(all_unique=False, *uuid_components)
 
         order = {
             'date': convert_timestamp_to_date(date),
@@ -149,8 +149,8 @@ def parse_bybit_hist(bybit_trade_history, owner, all_unique):
     return df_bybit_orders
 
 # Master
-def get_bybit_spot_history(bb_api_key, bb_secret_key, owner, start_date, end_date, all_unique):
+def get_bybit_spot_history(bb_api_key, bb_secret_key, owner, start_date, end_date):
     raw_result = loop_get_bybit_history(bb_api_key, bb_secret_key, 'spot', start_date, end_date)
-    df_parsed_hist = parse_bybit_hist(raw_result, owner, all_unique)
+    df_parsed_hist = parse_bybit_hist(raw_result, owner)
 
     return df_parsed_hist
