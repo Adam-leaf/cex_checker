@@ -123,6 +123,7 @@ def loop_get_bybit_closed(bb_api_key, bb_secret_key, category, start_time, end_t
     
     return result_df
 
+# Master
 def get_bybit_futures_history(bb_api_key, bb_secret_key, start_date, end_date):
     df_futures_history = loop_get_bybit_closed(bb_api_key, bb_secret_key, 'linear', start_date, end_date)
 

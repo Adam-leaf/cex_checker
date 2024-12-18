@@ -148,6 +148,7 @@ def parse_bybit_hist(bybit_trade_history, owner, all_unique):
     df_bybit_orders = pd.DataFrame(bybit_orders)
     return df_bybit_orders
 
+# Master
 def get_bybit_spot_history(bb_api_key, bb_secret_key, owner, start_date, end_date, all_unique):
     raw_result = loop_get_bybit_history(bb_api_key, bb_secret_key, 'spot', start_date, end_date)
     df_parsed_hist = parse_bybit_hist(raw_result, owner, all_unique)
