@@ -9,7 +9,7 @@ from requests.exceptions import ConnectTimeout
 from utility import convert_to_unix, convert_timestamp_to_date
 
 
-def bybit_closed_pnl (bb_api_key, bb_secret_key, category, start_time, end_time, cursor) : 
+def bybit_closed_pnl(bb_api_key, bb_secret_key, category, start_time, end_time, cursor) : 
 
     url = "https://api.bybit.com/v5/position/closed-pnl"
     recv_window = '2000'
@@ -50,7 +50,7 @@ def bybit_closed_pnl (bb_api_key, bb_secret_key, category, start_time, end_time,
         print(f"Bybit Closed Attempt failed due to connection timeout")
 
 
-def parse_bybit_closed (bb_api_key, bb_secret_key, category, unix_start, unix_end):
+def parse_bybit_closed(bb_api_key, bb_secret_key, category, unix_start, unix_end):
     
     cursor = ""
     df_all = pd.DataFrame()
@@ -73,18 +73,16 @@ def parse_bybit_closed (bb_api_key, bb_secret_key, category, unix_start, unix_en
             symbol = item.get('symbol')
             updatedTime = item.get('updatedTime')
             date = convert_timestamp_to_date(updatedTime)
-            #createdTime = item.get('createdTime')
             closedPnl = item.get('closedPnl')
+            action = "Long"
             
             order_data = {
-                'status': 'Closed',
                 'date': date,
+                'exchange_id': 'bybit_unified',
                 'symbol': symbol,
-                'exchange': 'bybit-unified',
+                'action': action,
+                'exchange': 'bybit_unified',
                 'invested_value': '-', # Also not sure how to calc
-                'equity': '-',
-                'notional': '-', # Not sure how to calc yet
-                'effective_lev': '-',
                 'uPnL' : '0',
                 'rPnL': closedPnl
             }
@@ -100,7 +98,7 @@ def parse_bybit_closed (bb_api_key, bb_secret_key, category, unix_start, unix_en
     return df_all
 
 
-def get_bybit_closed(bb_api_key, bb_secret_key, category, start_time, end_time):
+def loop_get_bybit_closed(bb_api_key, bb_secret_key, category, start_time, end_time):
     
     start_time = datetime.strptime(start_time, '%Y-%m-%d')
     end_time = datetime.strptime(end_time, '%Y-%m-%d')
@@ -118,9 +116,14 @@ def get_bybit_closed(bb_api_key, bb_secret_key, category, start_time, end_time):
         unix_end = convert_to_unix(current_end_time)
 
         # Calls function that calls the api
-        df_bb_closed_weekly = parse_bybit_closed(bb_api_key, bb_secret_key, category, unix_start, unix_end)
-        result_df = pd.concat([result_df, df_bb_closed_weekly], ignore_index=True)
+        df_bb_closed_daily = parse_bybit_closed(bb_api_key, bb_secret_key, category, unix_start, unix_end)
+        result_df = pd.concat([result_df, df_bb_closed_daily], ignore_index=True)
         
         current_start_time = current_end_time 
     
     return result_df
+
+def get_bybit_futures_history(bb_api_key, bb_secret_key, start_date, end_date):
+    df_futures_history = loop_get_bybit_closed(bb_api_key, bb_secret_key, 'linear', start_date, end_date)
+
+    return df_futures_history

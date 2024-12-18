@@ -1,7 +1,8 @@
 import math
 import requests
 import uuid
-from datetime import datetime
+import os
+from datetime import datetime, timedelta
 
 def convert_to_unix(date_input):
     
@@ -46,69 +47,58 @@ def generate_custom_uuid(all_unique=False, *args):
 
 def save_dataframe_to_csv(dataframe, file_path):
     try:
-        dataframe.to_csv(file_path, index=False)
-        print(f"DataFrame successfully saved to {file_path}")
+        # Create 'records' directory if it doesn't exist
+        os.makedirs('records', exist_ok=True)
+        
+        # Ensure the file path is within the records folder
+        full_path = os.path.join('records', file_path)
+        
+        # Save the dataframe
+        dataframe.to_csv(full_path, index=False)
+        print(f"DataFrame successfully saved to {full_path}")
     except Exception as e:
         print(f"An error occurred while saving the DataFrame to CSV: {e}")
 
+def assign_time(mode):
+    """
+    Has 4 modes:
+        1. Full - Start Date is 2 years ago from current time
+        2. Weekly - Start Date is 1 week ago from current time
+        3. Monthly - Start Date is 4 weeks ago from current time
+        4. Yearly - Start Date is 1 year ago from current time
+        5. Since2023 - Start Date is January 1, 2023
+    """
+    current_time_exact = datetime.now()
 
-# Bybit
-def get_bybit_price(asset):
+    # Convert the date back to a datetime object at midnight (00:00:00)
+    current_date = datetime.combine(current_time_exact, datetime.min.time())
 
-    renamed = {'MATIC': 'POL'}
-    
-    # Check if the asset needs to be renamed
-    asset = renamed.get(asset, asset)
+    end_date = current_date 
 
-    # Stablecoins
-    if asset in ['USDT', 'USDC', 'BUSD']:
-        return 1.0
-    
-    # If not, fetch the price from the API
-    url = f'https://api.bybit.com/v5/market/tickers?category=spot&symbol={asset}USDT'
-    response = requests.get(url)
-    data = response.json()
-
-    # Convert price to float and cache it
-    result = data.get('result', {})
-    list_data = result.get('list', [])
-
-    if list_data:
-        lastPrice = list_data[0].get('lastPrice')
-        if lastPrice is not None:
-            return float(lastPrice)
-
-    # If price cannot be found
-    print(f"Price for {asset} could not be found.")
-    return 0
-    
-
-def get_bybit_hist_price(asset, timestamp):
-    category = 'spot'
-
-    # Stablecoins
-    if asset in ['USDT', 'USDC', 'BUSD']:
-        return 1.0
-
-    query = f"symbol={asset}USDT&interval=1&category={category}&start={timestamp}&end={timestamp}"  # 1m interval
-    url = f"https://api.bybit.com/v5/market/kline?{query}"
-    
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        data = response.json()
-        print(data)
+    # 4 Modes
+    if mode == 'Full': 
+        print('Getting data from current date to 2 years ago')
+        start_date = end_date - timedelta(days=730)  # 2 years = 730 days
         
-        if data.get("result", {}).get("list"):  # Check if data exists
-            closing_price = float(data["result"]["list"][0][4])
-            return closing_price
-        else:  # If data is empty or doesn't exist for the timestamp
-            print(f"No data exists for {asset} at timestamp {timestamp}")
-            return 0
-    except requests.RequestException as e:
-        print(f"Error fetching data for {asset} at timestamp {timestamp}: {e}")
-        return 0
-    except (ValueError, IndexError, KeyError) as e:
-        print(f"Error processing data for {asset} at timestamp {timestamp}: {e}")
-        return 0
+    elif mode == 'Weekly':
+        print('Getting data from current date to 1 week ago')
+        start_date = end_date - timedelta(weeks=1)
+
+    elif mode == 'Monthly':
+        print('Getting data from current date to 4 weeks ago')
+        start_date = end_date - timedelta(weeks=4)
+    
+    elif mode == 'Yearly':
+        print('Getting data from current date to 1 year ago')
+        start_date = end_date - timedelta(years=1)
+
+    elif mode == 'Since2023':
+        print('Getting data from current date to January 1, 2023')
+        start_date = datetime(2023, 1, 1)
+
+    else:
+        raise ValueError("Invalid mode. Choose 'Full', 'Weekly', 'Monthly', 'Yearly', or 'Since2023'.")
+
+    return start_date, end_date
+
     

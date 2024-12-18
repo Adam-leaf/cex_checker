@@ -137,7 +137,7 @@ def parse_bybit_hist(bybit_trade_history, owner, all_unique):
             'position': symbol,
             'action': action,
             'PIC': owner,
-            'exchange': 'bybit',
+            'exchange': 'bybit_spot',
             'exec_qty': execQty,
             'exec_price': execValue,
             'usd_value': usd_value
