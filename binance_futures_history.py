@@ -65,16 +65,18 @@ def parse_bin_closed (bin_api_key, bin_secret_key, unix_start, unix_end):
         # Calculations
         price = float(order.get('price'))
         order_qty = float(order.get('qty'))
+        invested_value = price * order_qty
 
         order_data = {
             'date': convert_timestamp_to_date(unix_time),
             'orderId': order.get('orderId'),
+            'id': order.get('id'),
             'symbol': order.get('symbol'),
             'side': side,
-            'invested_value': order.get('execValue'),
+            'invested_value': invested_value,
             'exchange': 'binance_perps',
-            'execPrice': order.get('execPrice'),
-            'qty': order.get('orderQty'),
+            'price': order.get('price'),
+            'qty': order.get('qty'),
             'rPnL': realizedPnl
         }
 

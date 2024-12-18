@@ -82,5 +82,5 @@ def save_binance_records(acc_owners, mode):
 
 if __name__ == '__main__' : 
     acc_owners = ['J', 'VKEE', 'JM', 'JM2']
-    #save_bybit_records(acc_owners, "Full")
+    save_bybit_records(acc_owners, "Full")
     save_binance_records(acc_owners, "Full")

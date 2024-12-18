@@ -161,3 +161,4 @@ cython_debug/
 aws_ec2.pem
 *.pem
 records
+*.json
