@@ -8,7 +8,7 @@ from requests.exceptions import ConnectTimeout
 from utility import convert_to_unix, convert_timestamp_to_date
 
 
-def binance_closed_pnl (bin_api_key, bin_secret_key, unix_start , unix_end):
+def binance_closed_pnl(bin_api_key, bin_secret_key, unix_start , unix_end):
     
     base_url = 'https://fapi.binance.com'
     
@@ -31,11 +31,17 @@ def binance_closed_pnl (bin_api_key, bin_secret_key, unix_start , unix_end):
         if response.status_code == 200:
             data = response.json()
             return data
+        elif response.status_code == 429:
+            print("Rate Limit Reached. Waiting 60 seconds before retrying...")
+            time.sleep(60)
+            return binance_closed_pnl(bin_api_key, bin_secret_key, unix_start, unix_end)
         else:
             print(f"Failed with status code {response.status_code}.")
+            return None
             
     except ConnectTimeout:
         print(f"Binance closed Attempt failed due to connection timeout")
+        return None
 
 
 def parse_bin_closed (bin_api_key, bin_secret_key, unix_start, unix_end):
